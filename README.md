@@ -2,4 +2,6 @@
 공공 데이터 포털로부터 실시간 전국 미세먼지, 초미세먼지 데이터를 받아와 차트로 보여주는 예제
 
 크롬 CORS 오류 처리 설정 법: 크롬 바로가기 만들고 속성 > 바로가기 탭 > 대상에서 크롬 애플리케이션 경로 뒤에 다음 인수 추가 후 저장
---disable-web-security --user-data-dir="C:\chromedev" 
+```console
+--disable-web-security --user-data-dir="C:\chromedev"
+```
