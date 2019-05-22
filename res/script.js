@@ -144,16 +144,17 @@ var searchAction = e => {
     // 측정소별 검색인 경우
     else if(currentMenu === 2) {
         options = {
-            baseUrl: "http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getCtprvnMesureSidoLIst",
+            baseUrl: "http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty",
             numOfRows: "10",
             pageNo: "1",
-            sidoName: value,
-            searchCondition: "HOUR"
+            stationName: value,
+            dataTerm: "DAILY",
+            ver: "1.3"
         }
     }
 
     else {
-
+        alert("잘못된 접근입니다!");
     }
 
     // 엔터키 입력시 현재 메뉴에 대한 옵션으로 공공 데이터 포털에서 데이터를 가져와 차트에 보여주는 updateChart 함수를 호출함
@@ -286,11 +287,20 @@ var updateChart = async(options) => {
         }
 
         // 미세먼지 데이터 시간대 받아오기
-        let dataTime;
-        if(Array.isArray(data[0].response.body.items.item))
-            dataTime = data[0].response.body.items.item[0].dataTime['#text'];
+        let dataTimeStart;
+        let dataTimeEnd;
+        let itm = data[data.length - 1].response.body.items.item;
+        if(Array.isArray(itm))
+            dataTimeStart = itm[itm.length - 1].dataTime['#text'];
         else
-            dataTime = data[0].response.body.items.item.dataTime['#text'];
+            dataTimeStart = itm.dataTime['#text'];
+
+        itm = data[0].response.body.items.item;
+
+        if(Array.isArray(itm))
+            dataTimeEnd = itm[0].dataTime['#text'];
+        else
+            dataTimeEnd = itm.dataTime['#text'];
 
         // 전체 데이터 중 필요한 부분만(미세먼지, 초미세먼지) 변수에 저장
         for(var i = 0; i < data.length; i++) {
@@ -322,6 +332,75 @@ var updateChart = async(options) => {
         console.log(pData);
 
         mainChart.options.title.text = `${dataTime} ${options.sidoName} 미세먼지, 초미세먼지`;
+    }
+
+    // 현재 메뉴가 측정소별인 경우
+    else if(currentMenu === 1) {
+
+        // 결과가 0을 반환한 경우 값이 없는 것이므로 에러 출력
+        if(data[0].response.body.totalCount['#text'] === "0") {
+            chartAction.hide("결과가 없습니다.", "일시적인 문제일 수도 있습니다.<br>잠시 후 다시 시도해주세요.");
+            chartAction.pending.release();
+            return;
+        }
+
+        // 가져온 미세먼지 데이터가 어느 시간대의 데이터인지
+        let dataTime;
+
+        // 데이터 조회를 위한 변수
+        let src;
+
+        // 받아온 데이터가 배열타입인 경우
+        if(Array.isArray(data[0].response.body.items.item)) {
+            dataTime = data[0].response.body.items.item[0].dataTime['#text'];
+            src = data[0].response.body.items.item[0];
+        }
+
+        // 받아온 데이터가 객체인 경우(결과값이 하나만 반환되는 경우 배열이 아닌 객체로 반환됨)
+        else {
+            dataTime = data[0].response.body.items.item.dataTime['#text'];
+            src = data[0].response.body.items.item;
+        }
+        
+        // 우선적으로 미세먼지(pm10) 데이터만 가져온 것이므로 pm25는 비워둔다
+        // 차트에 넣을 각 그래프의 레이블과 미세먼지 데이터(pm10) 값을 세팅
+        pData.names = ["서울", "경기", "인천", "강원", "세종", "충북", "충남", "대전", "경북", "경남", "대구", "울산", "부산", "전북", "전남", "광주", "제주"],
+        pData.pm10 = [src.seoul['#text'], src.gyeonggi['#text'], src.incheon['#text'], src.gangwon['#text'], src.sejong['#text'], src.chungbuk['#text'], src.chungnam['#text'], src.daejeon['#text'], src.gyeongbuk['#text'], src.gyeongnam['#text'], src.daegu['#text'], src.ulsan['#text'], src.busan['#text'], src.jeonbuk['#text'], src.jeonnam['#text'], src.gwangju['#text'], src.jeju['#text']];
+
+        // 초미세먼지(pm2.5) 데이터를 받기 위해 옵션 값 재설정
+        options.itemCode = "PM25";
+        options.pageNo = "1";
+
+        // 위와 동일한 과정으로 초미세먼지 데이터를 받아옴
+        numOfRows = parseInt(options.numOfRows);
+        data = new Array(xmlToJson(await getData(apiKey, options)));
+        totalCount = parseInt(data[0].response.body.totalCount['#text']);
+        totalPages = parseInt(totalCount / numOfRows);
+        lastRemains = totalCount % numOfRows;
+    
+        if(lastRemains > 0) totalPages++;
+    
+        for(var i = 2; i <= totalPages; i++) {
+            options.pageNo = `${i}`;
+            data.push(xmlToJson(await getData(apiKey, options)));
+        }
+    
+        console.log(data);
+
+        if(Array.isArray(data[0].response.body.items.item)) {
+            src = data[0].response.body.items.item[0];
+        }
+        else {
+            src = data[0].response.body.items.item;
+        }
+
+        // 초미세먼지 데이터 값들 저장
+        pData.pm25 = [src.seoul['#text'], src.gyeonggi['#text'], src.incheon['#text'], src.gangwon['#text'], src.sejong['#text'], src.chungbuk['#text'], src.chungnam['#text'], src.daejeon['#text'], src.gyeongbuk['#text'], src.gyeongnam['#text'], src.daegu['#text'], src.ulsan['#text'], src.busan['#text'], src.jeonbuk['#text'], src.jeonnam['#text'], src.gwangju['#text'], src.jeju['#text']];
+
+        console.log(pData);
+
+        // 차트 제목 설정
+        mainChart.options.title.text = `${dataTime} 전국 미세먼지, 초미세먼지`;
     }
 
     // 차트 데이터 이름
@@ -462,7 +541,7 @@ var makeChart = () => {
     });
 }
 
-/** https://davidwalsh.name/convert-xml-json 
+/** https://davidwalsh.name/convert-xml-json 참고함.
  * 공공 데이터 포털에서 가져온 xml 형태의 데이터를 좀 더 가공하기 쉬운 json 데이터로 변환해 주는 함수
 */
 var xmlToJson = xml => {
