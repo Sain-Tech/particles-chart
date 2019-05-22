@@ -24,7 +24,7 @@ $(document).ready(() => {
 
     // 검색바 애니메이션 효과 적용(우측에서 날라오기) - 검색바 너비(픽셀) 만큼 우측 숨겨진 영역에서 이동해 옴
     const search_box = $('#search_box');
-    search_box.css({transform: `translateX(${search_box[0].clientWidth}px)`});
+    search_box.css({ transform: `translateX(${search_box[0].clientWidth}px)` });
 
     // Chart.js 기본 차트 구조 생성하는 함수
     makeChart();
@@ -42,15 +42,15 @@ var menuOnClick = e => {
 
     // 검색바 id (getElementById()와 동일한 jQuery 문법)
     const search_box = $('#search_box');
-    
+
     // 탭 클릭 시 클릭한 메뉴에 active 클래스를 추가함으로 활성화 되었음을 진하게 표시해 준다
     $(target).addClass('active');
 
     // 나머지 메뉴(siblings)들은 active 클래스를 제거해 준다
     $(target).siblings().removeClass('active');
-    
+
     // 첫 번째 메뉴를 클릭한 경우 전국의 데이터 보여주기
-    if($(target).attr('data') === "0") {
+    if ($(target).attr('data') === "0") {
 
         // 공공 데이터 포털로 미세먼지 데이터를 요청하기 위해 필요한 정보들을 설정
         let options = {
@@ -64,7 +64,7 @@ var menuOnClick = e => {
         console.log("전국");
 
         // 첫 번째 메뉴(전국)를 클릭한 경우는 검색이 필요 없으므로 검색바를 숨김(우측으로 검색바 너비 만큼 이동)
-        search_box.css({transform: `translateX(${search_box[0].clientWidth}px)`});
+        search_box.css({ transform: `translateX(${search_box[0].clientWidth}px)` });
 
         // 현재 선택한 메뉴는 0(첫 번째임)
         currentMenu = 0;
@@ -74,11 +74,11 @@ var menuOnClick = e => {
     }
 
     // 두 번째 메뉴를 클릭한 경우 시군구별(서울로 검색하면 서울시의 각 구의 데이터를 보여줌) 데이터를 보여줌
-    else if($(target).attr('data') === "1") {
+    else if ($(target).attr('data') === "1") {
         console.log("시군구별");
 
         // 검색해야 하므로 검색바를 보여준다
-        search_box.css({transform: `translateX(0)`});
+        search_box.css({ transform: `translateX(0)` });
 
         // 검색바 placeholder를 변경
         search_box.children().attr("placeholder", "시, 도 검색");
@@ -90,12 +90,12 @@ var menuOnClick = e => {
     }
 
     // 세 번째 메뉴를 클릭한 경우 측정소별(강남구) 데이터를 보여줌
-    else if($(target).attr('data') === "2") {
+    else if ($(target).attr('data') === "2") {
         console.log("측정소별");
 
         // 세 번째 메뉴 역시 검색이 필요하므로 검색바를 보여줌
-        search_box.css({transform: `translateX(0)`});
-        search_box.children().attr("placeholder","측정소명 검색");
+        search_box.css({ transform: `translateX(0)` });
+        search_box.children().attr("placeholder", "측정소명 검색");
         chartAction.hide("우측 상단의 검색바를 이용해서 검색해 주세요.", "예: 강남구");
         chartAction.pending.release();
         currentMenu = 2;
@@ -104,8 +104,8 @@ var menuOnClick = e => {
     // 잘못된 메뉴나 명령인 경우
     else {
         console.error("잘못된 명령입니다.");
-        search_box.css({transform: `translateX(${search_box[0].clientWidth}px)`});
-        search_box.children().attr("placeholder","Search...");
+        search_box.css({ transform: `translateX(${search_box[0].clientWidth}px)` });
+        search_box.children().attr("placeholder", "Search...");
         chartAction.hide("잘못된 명령입니다.", "");
         currentMenu = -1;
     }
@@ -124,14 +124,14 @@ var searchAction = e => {
 
     // 공공 데이터 포털에 요청할 데이터을 위한 옵션 변수
     let options = {}
-    
+
     // 현재 선택한 메뉴가 전국인 경우 검색이 필요 없음
-    if(currentMenu === 0) {
-        
+    if (currentMenu === 0) {
+
     }
 
     // 시군구별 검색인 경우 다음과 같은 옵션 지정
-    else if(currentMenu === 1) {
+    else if (currentMenu === 1) {
         options = {
             baseUrl: "http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getCtprvnMesureSidoLIst",
             numOfRows: "10",
@@ -142,7 +142,7 @@ var searchAction = e => {
     }
 
     // 측정소별 검색인 경우
-    else if(currentMenu === 2) {
+    else if (currentMenu === 2) {
         options = {
             baseUrl: "http://openapi.airkorea.or.kr/openapi/services/rest/ArpltnInforInqireSvc/getMsrstnAcctoRltmMesureDnsty",
             numOfRows: "10",
@@ -158,7 +158,7 @@ var searchAction = e => {
     }
 
     // 엔터키 입력시 현재 메뉴에 대한 옵션으로 공공 데이터 포털에서 데이터를 가져와 차트에 보여주는 updateChart 함수를 호출함
-    if(e.which == 13) { 
+    if (e.which == 13) {
         console.log(value);
         updateChart(options)
     };
@@ -169,7 +169,7 @@ $(document).on('change', '#search_box > input', searchAction).on('keyup', '#sear
 
 
 // 공공 데이터 포털에서 데이터를 가져와서 차트에 보여주는 함수
-var updateChart = async(options) => {
+var updateChart = async (options) => {
 
     // 데이터 가져올 때 로딩중 이라는 화면을 보여줌
     chartAction.pending.set();
@@ -197,10 +197,10 @@ var updateChart = async(options) => {
     let lastRemains = totalCount % numOfRows;
 
     // 남은 데이터가 있는 경우에 페이지 수 하나 추가(10개씩 35개면 총 페이지수는 4가 됨)
-    if(lastRemains > 0) totalPages++;
+    if (lastRemains > 0) totalPages++;
 
     // 2번째 페이지부터 10개씩 가져와서 배열에 저장함
-    for(var i = 2; i <= totalPages; i++) {
+    for (var i = 2; i <= totalPages; i++) {
         options.pageNo = `${i}`;
         data.push(xmlToJson(await getData(apiKey, options)));
     }
@@ -208,10 +208,10 @@ var updateChart = async(options) => {
     console.log(data);
 
     // 현재 선택한 메뉴가 전국인 경우
-    if(currentMenu === 0) {
+    if (currentMenu === 0) {
 
         // 결과가 0을 반환한 경우 값이 없는 것이므로 에러 출력
-        if(data[0].response.body.totalCount['#text'] === "0") {
+        if (data[0].response.body.totalCount['#text'] === "0") {
             chartAction.hide("결과가 없습니다.", "일시적인 문제일 수도 있습니다.<br>잠시 후 다시 시도해주세요.");
             chartAction.pending.release();
             return;
@@ -224,7 +224,7 @@ var updateChart = async(options) => {
         let src;
 
         // 받아온 데이터가 배열타입인 경우
-        if(Array.isArray(data[0].response.body.items.item)) {
+        if (Array.isArray(data[0].response.body.items.item)) {
             dataTime = data[0].response.body.items.item[0].dataTime['#text'];
             src = data[0].response.body.items.item[0];
         }
@@ -234,11 +234,11 @@ var updateChart = async(options) => {
             dataTime = data[0].response.body.items.item.dataTime['#text'];
             src = data[0].response.body.items.item;
         }
-        
+
         // 우선적으로 미세먼지(pm10) 데이터만 가져온 것이므로 pm25는 비워둔다
         // 차트에 넣을 각 그래프의 레이블과 미세먼지 데이터(pm10) 값을 세팅
         pData.names = ["서울", "경기", "인천", "강원", "세종", "충북", "충남", "대전", "경북", "경남", "대구", "울산", "부산", "전북", "전남", "광주", "제주"],
-        pData.pm10 = [src.seoul['#text'], src.gyeonggi['#text'], src.incheon['#text'], src.gangwon['#text'], src.sejong['#text'], src.chungbuk['#text'], src.chungnam['#text'], src.daejeon['#text'], src.gyeongbuk['#text'], src.gyeongnam['#text'], src.daegu['#text'], src.ulsan['#text'], src.busan['#text'], src.jeonbuk['#text'], src.jeonnam['#text'], src.gwangju['#text'], src.jeju['#text']];
+            pData.pm10 = [src.seoul['#text'], src.gyeonggi['#text'], src.incheon['#text'], src.gangwon['#text'], src.sejong['#text'], src.chungbuk['#text'], src.chungnam['#text'], src.daejeon['#text'], src.gyeongbuk['#text'], src.gyeongnam['#text'], src.daegu['#text'], src.ulsan['#text'], src.busan['#text'], src.jeonbuk['#text'], src.jeonnam['#text'], src.gwangju['#text'], src.jeju['#text']];
 
         // 초미세먼지(pm2.5) 데이터를 받기 위해 옵션 값 재설정
         options.itemCode = "PM25";
@@ -250,17 +250,17 @@ var updateChart = async(options) => {
         totalCount = parseInt(data[0].response.body.totalCount['#text']);
         totalPages = parseInt(totalCount / numOfRows);
         lastRemains = totalCount % numOfRows;
-    
-        if(lastRemains > 0) totalPages++;
-    
-        for(var i = 2; i <= totalPages; i++) {
+
+        if (lastRemains > 0) totalPages++;
+
+        for (var i = 2; i <= totalPages; i++) {
             options.pageNo = `${i}`;
             data.push(xmlToJson(await getData(apiKey, options)));
         }
-    
+
         console.log(data);
 
-        if(Array.isArray(data[0].response.body.items.item)) {
+        if (Array.isArray(data[0].response.body.items.item)) {
             src = data[0].response.body.items.item[0];
         }
         else {
@@ -277,38 +277,29 @@ var updateChart = async(options) => {
     }
 
     // 현재 메뉴가 시군구별인 경우
-    else if(currentMenu === 1) {
+    else if (currentMenu === 1) {
 
         // 데이터 수가 0이 반환된 경우 에러 출력
-        if(data[0].response.body.totalCount['#text'] === "0") {
+        if (data[0].response.body.totalCount['#text'] === "0") {
             chartAction.hide("검색 결과가 없습니다.", "키워드가 올바른지 확인하세요.");
             chartAction.pending.release();
             return;
         }
 
         // 미세먼지 데이터 시간대 받아오기
-        let dataTimeStart;
-        let dataTimeEnd;
-        let itm = data[data.length - 1].response.body.items.item;
-        if(Array.isArray(itm))
-            dataTimeStart = itm[itm.length - 1].dataTime['#text'];
+        let dataTime;
+        if (Array.isArray(data[0].response.body.items.item))
+            dataTime = data[0].response.body.items.item[0].dataTime['#text'];
         else
-            dataTimeStart = itm.dataTime['#text'];
-
-        itm = data[0].response.body.items.item;
-
-        if(Array.isArray(itm))
-            dataTimeEnd = itm[0].dataTime['#text'];
-        else
-            dataTimeEnd = itm.dataTime['#text'];
+            dataTime = data[0].response.body.items.item.dataTime['#text'];
 
         // 전체 데이터 중 필요한 부분만(미세먼지, 초미세먼지) 변수에 저장
-        for(var i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
             const src = data[i].response.body.items.item;
 
             // 배열인 경우(위와 동일한 조건)
-            if(Array.isArray(src)) {
-                for(var j in src) {
+            if (Array.isArray(src)) {
+                for (var j in src) {
 
                     // 시, 군 이름
                     pData.names.push(src[j].cityName['#text']);
@@ -335,77 +326,66 @@ var updateChart = async(options) => {
     }
 
     // 현재 메뉴가 측정소별인 경우
-    else if(currentMenu === 1) {
+    else if (currentMenu === 2) {
 
-        // 결과가 0을 반환한 경우 값이 없는 것이므로 에러 출력
-        if(data[0].response.body.totalCount['#text'] === "0") {
-            chartAction.hide("결과가 없습니다.", "일시적인 문제일 수도 있습니다.<br>잠시 후 다시 시도해주세요.");
+        // 데이터 수가 0이 반환된 경우 에러 출력
+        if (data[0].response.body.totalCount['#text'] === "0") {
+            chartAction.hide("검색 결과가 없습니다.", "키워드가 올바른지 확인하세요.");
             chartAction.pending.release();
             return;
         }
 
-        // 가져온 미세먼지 데이터가 어느 시간대의 데이터인지
-        let dataTime;
+        // 미세먼지 데이터 시간대 받아오기
+        let dataTimeStart;
+        let dataTimeEnd;
+        let itm = data[data.length - 1].response.body.items.item;
+        if (Array.isArray(itm))
+            dataTimeStart = itm[itm.length - 1].dataTime['#text'];
+        else
+            dataTimeStart = itm.dataTime['#text'];
 
-        // 데이터 조회를 위한 변수
-        let src;
+        itm = data[0].response.body.items.item;
 
-        // 받아온 데이터가 배열타입인 경우
-        if(Array.isArray(data[0].response.body.items.item)) {
-            dataTime = data[0].response.body.items.item[0].dataTime['#text'];
-            src = data[0].response.body.items.item[0];
+        if (Array.isArray(itm))
+            dataTimeEnd = itm[0].dataTime['#text'];
+        else
+            dataTimeEnd = itm.dataTime['#text'];
+
+        // 전체 데이터 중 필요한 부분만(미세먼지, 초미세먼지) 변수에 저장
+        for (var i = 0; i < data.length; i++) {
+            const src = data[i].response.body.items.item;
+
+            // 배열인 경우(위와 동일한 조건)
+            if (Array.isArray(src)) {
+                for (var j in src) {
+
+                    // 시, 군 이름
+                    pData.names.push(src[j].dataTime['#text']);
+
+                    // 미세먼지
+                    pData.pm10.push(src[j].pm10Value['#text']);
+
+                    // 초미세먼지
+                    pData.pm25.push(src[j].pm25Value['#text']);
+                }
+            }
+
+            // 객체인 경우
+            else {
+                pData.names.push(src.dataTime['#text']);
+                pData.pm10.push(src.pm10Value['#text']);
+                pData.pm25.push(src.pm25Value['#text']);
+            }
         }
-
-        // 받아온 데이터가 객체인 경우(결과값이 하나만 반환되는 경우 배열이 아닌 객체로 반환됨)
-        else {
-            dataTime = data[0].response.body.items.item.dataTime['#text'];
-            src = data[0].response.body.items.item;
-        }
-        
-        // 우선적으로 미세먼지(pm10) 데이터만 가져온 것이므로 pm25는 비워둔다
-        // 차트에 넣을 각 그래프의 레이블과 미세먼지 데이터(pm10) 값을 세팅
-        pData.names = ["서울", "경기", "인천", "강원", "세종", "충북", "충남", "대전", "경북", "경남", "대구", "울산", "부산", "전북", "전남", "광주", "제주"],
-        pData.pm10 = [src.seoul['#text'], src.gyeonggi['#text'], src.incheon['#text'], src.gangwon['#text'], src.sejong['#text'], src.chungbuk['#text'], src.chungnam['#text'], src.daejeon['#text'], src.gyeongbuk['#text'], src.gyeongnam['#text'], src.daegu['#text'], src.ulsan['#text'], src.busan['#text'], src.jeonbuk['#text'], src.jeonnam['#text'], src.gwangju['#text'], src.jeju['#text']];
-
-        // 초미세먼지(pm2.5) 데이터를 받기 위해 옵션 값 재설정
-        options.itemCode = "PM25";
-        options.pageNo = "1";
-
-        // 위와 동일한 과정으로 초미세먼지 데이터를 받아옴
-        numOfRows = parseInt(options.numOfRows);
-        data = new Array(xmlToJson(await getData(apiKey, options)));
-        totalCount = parseInt(data[0].response.body.totalCount['#text']);
-        totalPages = parseInt(totalCount / numOfRows);
-        lastRemains = totalCount % numOfRows;
-    
-        if(lastRemains > 0) totalPages++;
-    
-        for(var i = 2; i <= totalPages; i++) {
-            options.pageNo = `${i}`;
-            data.push(xmlToJson(await getData(apiKey, options)));
-        }
-    
-        console.log(data);
-
-        if(Array.isArray(data[0].response.body.items.item)) {
-            src = data[0].response.body.items.item[0];
-        }
-        else {
-            src = data[0].response.body.items.item;
-        }
-
-        // 초미세먼지 데이터 값들 저장
-        pData.pm25 = [src.seoul['#text'], src.gyeonggi['#text'], src.incheon['#text'], src.gangwon['#text'], src.sejong['#text'], src.chungbuk['#text'], src.chungnam['#text'], src.daejeon['#text'], src.gyeongbuk['#text'], src.gyeongnam['#text'], src.daegu['#text'], src.ulsan['#text'], src.busan['#text'], src.jeonbuk['#text'], src.jeonnam['#text'], src.gwangju['#text'], src.jeju['#text']];
 
         console.log(pData);
 
-        // 차트 제목 설정
-        mainChart.options.title.text = `${dataTime} 전국 미세먼지, 초미세먼지`;
+        mainChart.options.title.text = `${dataTimeStart} ~ ${dataTimeEnd} ${options.stationName} 미세먼지, 초미세먼지`;
     }
 
     // 차트 데이터 이름
     mainChart.data.labels = pData.names;
-    
+
     // 데이터셋 1에 미세먼지 데이터
     mainChart.data.datasets[0].data = pData.pm10;
 
@@ -435,7 +415,7 @@ var getData = (apikey, options) => {
         let queries = '';
 
         // 넘겨받은 옵션으로 요청할 주소의 쿼리스트링 생성
-        for(var i in options) {
+        for (var i in options) {
             queries += `&${encodeURIComponent(i)}=${encodeURIComponent(options[i])}`;
         }
 
@@ -449,12 +429,12 @@ var getData = (apikey, options) => {
             url: options.baseUrl + params,
 
             // 데이터 수신에 성공한 경우 데이터 반환
-            success: function(data) {
+            success: function (data) {
                 resolve(data);
             },
 
             // 실패할 경우 로딩 화면 해제 및 에러메시지 출력
-            error: function() {
+            error: function () {
                 console.error("서버로부터 응답이 잘못 되었습니다.");
                 chartAction.hide("응답이 잘못 되었거나 요청 횟수가 너무 많습니다.", "잠시 후 다시 시도해 주세요.")
                 chartAction.pending.release();
@@ -468,7 +448,7 @@ var getData = (apikey, options) => {
 var chartAction = {
 
     // 일시적으로 숨겼던 차트를 보여줌
-    show: function() {
+    show: function () {
         $('#main_chart').css('display', 'flex');
         $('#chart_cover').css('display', 'none');
         $('#chart_cover > h3').html("");
@@ -476,7 +456,7 @@ var chartAction = {
     },
 
     // 차트를 감추고 각종 메시지를 보여줌(에러 등등)
-    hide: function(coverTitle, coverMsg) {
+    hide: function (coverTitle, coverMsg) {
         $('#main_chart').css('display', 'none');
         $('#chart_cover').css('display', 'flex');
         $('#chart_cover > h3').html(coverTitle);
@@ -484,7 +464,7 @@ var chartAction = {
     },
 
     // 차트 데이터 변경 후 차트를 다시 그려주는 업데이트 함수
-    update: function() {
+    update: function () {
         mainChart.update();
     },
 
@@ -492,12 +472,12 @@ var chartAction = {
     pending: {
 
         // 로딩화면 설정
-        set: function() {
+        set: function () {
             $('#chart_pending').css('display', 'block');
         },
 
         // 로딩화면 해제
-        release: function() {
+        release: function () {
             $('#chart_pending').css('display', 'none');
         }
     }
@@ -593,34 +573,34 @@ var makeColorSet = (arr, opt) => {
         border: []
     };
 
-    for(let i = 0; i < arr.length; i++) {
+    for (let i = 0; i < arr.length; i++) {
         const d = parseInt(arr[i]);
         let e;
 
         // 미세먼지 데이터 색 변환(값에 따른 색 기준은 네이버 참고)
-        if(opt == 0) {
-            if(d <= 30) e = 'rgba(0, 170, 255, 0.333)';
-            else if(d > 30 && d <= 80) e = 'rgba(50, 255, 0, 0.333)';
-            else if(d > 80 && d <= 150) e = 'rgba(255, 170, 0, 0.333)';
+        if (opt == 0) {
+            if (d <= 30) e = 'rgba(0, 170, 255, 0.333)';
+            else if (d > 30 && d <= 80) e = 'rgba(50, 255, 0, 0.333)';
+            else if (d > 80 && d <= 150) e = 'rgba(255, 170, 0, 0.333)';
             else e = 'rgba(255, 0, 0, 0.333)';
         }
 
         // 초미세먼지 데이터 색 변환
-        else if(opt == 1) {
-            if(d <= 15) e = 'rgba(0, 170, 255, 0.333)';
-            else if(d > 15 && d <= 35) e = 'rgba(50, 255, 0, 0.333)';
-            else if(d > 35 && d <= 75) e = 'rgba(255, 170, 0, 0.333)';
+        else if (opt == 1) {
+            if (d <= 15) e = 'rgba(0, 170, 255, 0.333)';
+            else if (d > 15 && d <= 35) e = 'rgba(50, 255, 0, 0.333)';
+            else if (d > 35 && d <= 75) e = 'rgba(255, 170, 0, 0.333)';
             else e = 'rgba(255, 0, 0, 0.333)';
         }
         colors.background.push(e);
 
-        if(opt == 0) {
-            if(d <= 30) e = 'rgba(0, 170, 255, 0.667)';
-            else if(d > 30 && d <= 80) e = 'rgba(50, 255, 0, 0.667)';
-            else if(d > 80 && d <= 150) e = 'rgba(255, 170, 0, 0.667)';
+        if (opt == 0) {
+            if (d <= 30) e = 'rgba(0, 170, 255, 0.667)';
+            else if (d > 30 && d <= 80) e = 'rgba(50, 255, 0, 0.667)';
+            else if (d > 80 && d <= 150) e = 'rgba(255, 170, 0, 0.667)';
             else e = 'rgba(255, 0, 0, 0.667)';
         }
-        else if(opt == 1) {
+        else if (opt == 1) {
             // if(d <= 15) e = 'rgba(0, 170, 255, 0.667)';
             // else if(d > 15 && d <= 35) e = 'rgba(50, 255, 0, 0.667)';
             // else if(d > 35 && d <= 75) e = 'rgba(255, 170, 0, 0.667)';
