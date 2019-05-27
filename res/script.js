@@ -206,6 +206,9 @@ var updateChart = async (options) => {
     }
 
     console.log(data);
+    console.log(refineJsonData(data));
+    var pm10TableData = refineJsonData(data);
+
 
     // 현재 선택한 메뉴가 전국인 경우
     if (currentMenu === 0) {
@@ -611,4 +614,75 @@ var makeColorSet = (arr, opt) => {
     }
 
     return colors;
+}
+
+var datas = {
+    columns: ['서울', '경기', '인천', '강원', '세종', '충북', '충남'],
+    rows: ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00'],
+    datas:[['1','1','1',1,1,1,1],[1,'1',1,1,1,1,1],[1,1,1,1,1,1,1],[1,1,1,1,1,1,1],[1,1,1,1,1,1,1],[1,1,1,1,1,1,1],[1,1,1,1,1,1,1]]
+};
+
+var refineJsonData = function(jsonArr) {
+    const o = jsonArr.constructor()
+    let result = [];
+
+    for (var i = 0; i < o.length; i++) {
+        // 받아온 데이터가 배열타입인 경우
+        if (Array.isArray(o[i].response.body.items.item)) {
+            src = o[i].response.body.items.item;
+            for (var j = 0; j < src.length; j++) {
+                for (var key in src[j]) {
+                    if (key === "#text") continue;
+                    src[j][key] = src[j][key]["#text"];
+                }
+                result.push(src[j]);
+            }
+        }
+
+        // 받아온 데이터가 객체인 경우(결과값이 하나만 반환되는 경우 배열이 아닌 객체로 반환됨)
+        else {
+            src = o[i].response.body.items.item;
+            for (var key in src) {
+                if (key === "#text") continue;
+                src[key] = src[key]["#text"];
+            }
+            result.push(src);
+        }
+    }
+
+    return result;
+}
+
+var makeTable = function(target, datas) {
+
+    const colNames = datas.columns;
+    const rowNames = datas.rows;
+    const tDatas = datas.datas;
+
+    let html = `<table class="ui definition table">
+            <thead>
+                <tr>
+                    <th></th>`;
+
+    for(var i = 0; i < colNames.length; i++) {
+        html += `<th>${colNames[i]}</th>`;
+    }
+
+    html += `</tr></thead><tbody>`;
+
+    for(var i = 0; i < rowNames.length; i++) {
+        html += `<tr>`;
+        html += `<td>${rowNames[i]}</td>`;
+        
+        for(var j = 0; j < colNames.length; j++) {
+            let txt = '';
+            if(tDatas[i][j]) txt = tDatas[i][j];
+            html += `<td>${txt}</td>`;
+        }
+        html += `</tr>`;
+    }
+    
+    html += `</tbody></table>`;
+
+    $(target).append(html);
 }
