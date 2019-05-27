@@ -8,10 +8,6 @@ main {
     transition: transform 900ms cubic-bezier(0.65, 0.05, 0.36, 1);
 }
 
-#main_chart {
-
-}
-
 #chart_cover {
     min-height: 640px;
     display: flex;
@@ -27,6 +23,42 @@ main {
     display: none;
 }
 
-embed {
-    height: 20px;
+.ui.table {
+    margin-top: 24px;
+}
+
+.ui.table > caption {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    font-weight: bold;
+    color: #505050;
+    margin: 12px 0 24px 0;
+}
+
+.ui.table > caption > span {
+    font-size: 12px;
+    font-weight: bold;
+    color: #505050;
+}
+
+.ui.tabular.menu.center {
+    justify-content: center;
+}
+
+.ui.tab.segment {
+    max-height: 512px;
+    overflow-y: auto;   
+}
+
+div.hr {
+    border-top: 1px solid #aaaaaa;
+    margin: 64px auto;
+    width: calc(100% - 240px);
+}
+
+@media screen and (max-width: 512px) {
+    div.hr {
+        margin: 48px auto;
+        width: calc(100% - 144px);
+    }
 }

@@ -49,6 +49,9 @@ var menuOnClick = e => {
     // 나머지 메뉴(siblings)들은 active 클래스를 제거해 준다
     $(target).siblings().removeClass('active');
 
+    // 24시간 전국 데이터 테이블을 감춤
+    tabPaneAction.removeTabPane();
+
     // 첫 번째 메뉴를 클릭한 경우 전국의 데이터 보여주기
     if ($(target).attr('data') === "0") {
 
@@ -205,13 +208,50 @@ var updateChart = async (options) => {
         data.push(xmlToJson(await getData(apiKey, options)));
     }
 
-    console.log(data);
-    console.log(refineJsonData(data));
-    var pm10TableData = refineJsonData(data);
-
-
     // 현재 선택한 메뉴가 전국인 경우
     if (currentMenu === 0) {
+        
+        // 24시간 전국 미세먼지 및 초미세먼지 데이터 테이블을 위한 탭을 만드는 변수
+        var tabdata = {
+            counts: 2, // 탭 수
+            tabnames: ['미세먼지', '초미세먼지'], // 탭 이름
+            active: 0 // 초기 활성 탭 지정
+        };
+        
+        // 옵션으로 탭 페이지를 만듦
+        tabPaneAction.makeTabPane('.ui.segment', tabdata);
+
+        // 미세먼지 테이블 데이터
+        var pm10TableData = {
+            title: "24시간 미세먼지(PM 10) 데이터",
+            title_deco: " (단위: ㎍/m³)",
+            columns: ["서울", "경기", "인천", "강원", "세종", "충북", "충남", "대전", "경북", "경남", "대구", "울산", "부산", "전북", "전남", "광주", "제주"],
+            rows: [],
+            datas: []
+        };
+
+        // 초미세먼지 테이블 데이터
+        var pm25TableData = {
+            title: "24시간 초미세먼지(PM 2.5) 데이터",
+            title_deco: " (단위: ㎍/m³)",
+            columns: ["서울", "경기", "인천", "강원", "세종", "충북", "충남", "대전", "경북", "경남", "대구", "울산", "부산", "전북", "전남", "광주", "제주"],
+            rows: [],
+            datas: []
+        };
+
+        console.log(data);
+
+        // 테이블 데이터를 위해 공공 데이터 포탈에서 받아온 데이터를 좀 더 보기 좋게 가공하는 함수 호출
+        var refinedData = refineJsonData(data);
+
+        // 미세먼지 데이터를 테이블 데이터 변수에 넣음
+        for (var i = 0; i < refinedData.length; i++) {
+            pm10TableData.rows.push(refinedData[i].dataTime);
+            pm10TableData.datas.push([refinedData[i].seoul, refinedData[i].gyeonggi, refinedData[i].incheon, refinedData[i].gangwon, refinedData[i].sejong, refinedData[i].chungbuk, refinedData[i].chungnam, refinedData[i].daejeon, refinedData[i].gyeongbuk, refinedData[i].gyeongnam, refinedData[i].daegu, refinedData[i].ulsan, refinedData[i].busan, refinedData[i].jeonbuk, refinedData[i].jeonnam, refinedData[i].gwangju, refinedData[i].jeju]);
+        }
+
+        // 만든 데이터로 테이블을 탭 페이지 0번째에 생성함
+        tableAction.makeTable('.tab.segment[data-tab="tab_0"]', pm10TableData);
 
         // 결과가 0을 반환한 경우 값이 없는 것이므로 에러 출력
         if (data[0].response.body.totalCount['#text'] === "0") {
@@ -241,7 +281,7 @@ var updateChart = async (options) => {
         // 우선적으로 미세먼지(pm10) 데이터만 가져온 것이므로 pm25는 비워둔다
         // 차트에 넣을 각 그래프의 레이블과 미세먼지 데이터(pm10) 값을 세팅
         pData.names = ["서울", "경기", "인천", "강원", "세종", "충북", "충남", "대전", "경북", "경남", "대구", "울산", "부산", "전북", "전남", "광주", "제주"],
-            pData.pm10 = [src.seoul['#text'], src.gyeonggi['#text'], src.incheon['#text'], src.gangwon['#text'], src.sejong['#text'], src.chungbuk['#text'], src.chungnam['#text'], src.daejeon['#text'], src.gyeongbuk['#text'], src.gyeongnam['#text'], src.daegu['#text'], src.ulsan['#text'], src.busan['#text'], src.jeonbuk['#text'], src.jeonnam['#text'], src.gwangju['#text'], src.jeju['#text']];
+        pData.pm10 = [src.seoul['#text'], src.gyeonggi['#text'], src.incheon['#text'], src.gangwon['#text'], src.sejong['#text'], src.chungbuk['#text'], src.chungnam['#text'], src.daejeon['#text'], src.gyeongbuk['#text'], src.gyeongnam['#text'], src.daegu['#text'], src.ulsan['#text'], src.busan['#text'], src.jeonbuk['#text'], src.jeonnam['#text'], src.gwangju['#text'], src.jeju['#text']];
 
         // 초미세먼지(pm2.5) 데이터를 받기 위해 옵션 값 재설정
         options.itemCode = "PM25";
@@ -263,6 +303,16 @@ var updateChart = async (options) => {
 
         console.log(data);
 
+        // 초미세먼지 테이블 데이터(미세먼지의 경우와 동일)
+        var refinedData = refineJsonData(data);
+
+        for (var i = 0; i < refinedData.length; i++) {
+            pm25TableData.rows.push(refinedData[i].dataTime);
+            pm25TableData.datas.push([refinedData[i].seoul, refinedData[i].gyeonggi, refinedData[i].incheon, refinedData[i].gangwon, refinedData[i].sejong, refinedData[i].chungbuk, refinedData[i].chungnam, refinedData[i].daejeon, refinedData[i].gyeongbuk, refinedData[i].gyeongnam, refinedData[i].daegu, refinedData[i].ulsan, refinedData[i].busan, refinedData[i].jeonbuk, refinedData[i].jeonnam, refinedData[i].gwangju, refinedData[i].jeju]);
+        }
+
+        tableAction.makeTable('.tab.segment[data-tab="tab_1"]', pm25TableData);
+
         if (Array.isArray(data[0].response.body.items.item)) {
             src = data[0].response.body.items.item[0];
         }
@@ -272,8 +322,6 @@ var updateChart = async (options) => {
 
         // 초미세먼지 데이터 값들 저장
         pData.pm25 = [src.seoul['#text'], src.gyeonggi['#text'], src.incheon['#text'], src.gangwon['#text'], src.sejong['#text'], src.chungbuk['#text'], src.chungnam['#text'], src.daejeon['#text'], src.gyeongbuk['#text'], src.gyeongnam['#text'], src.daegu['#text'], src.ulsan['#text'], src.busan['#text'], src.jeonbuk['#text'], src.jeonnam['#text'], src.gwangju['#text'], src.jeju['#text']];
-
-        console.log(pData);
 
         // 차트 제목 설정
         mainChart.options.title.text = `${dataTime} 전국 미세먼지, 초미세먼지`;
@@ -424,7 +472,6 @@ var getData = (apikey, options) => {
 
         // API 키 쿼리스트링 지정
         const params = `?${encodeURIComponent('ServiceKey')}=${apikey}${queries}`;
-        console.log(params);
 
         // jQuery의 ajax를 이용해서 데이터를 받아옴
         $.ajax({
@@ -486,6 +533,52 @@ var chartAction = {
     }
 }
 
+// 탭 페이지 관련 함수
+var tabPaneAction = {
+    makeTabPane: function (target, data) {
+        $('.ui.attached.tabular.menu').remove();
+        $('.ui.tab.segment').remove();
+        $('div.hr').remove();
+        makeTabPane(target, data);
+    },
+
+    removeTabPane: function() {
+        $('.ui.attached.tabular.menu').remove();
+        $('.ui.tab.segment').remove();
+        $('div.hr').remove();
+    },
+}
+
+// 표 관련 함수
+var tableAction = {
+    makeTable: function (target, data) {
+        $(`${target} > .ui.tables`).remove();
+        makeTable(target, data);
+    },
+
+    removeTable: function(target) {
+        $(`${target} > .ui.tables`).remove();
+    },
+
+    addTable: function(target, data) {
+        makeTable(target, data);
+    },
+
+    // 로딩 화면 띄워주기(차트 위에 로딩중이라는 화면이 보여짐)
+    pending: {
+
+        // 로딩화면 설정
+        set: function () {
+            $('#chart_pending').css('display', 'block');
+        },
+
+        // 로딩화면 해제
+        release: function () {
+            $('#chart_pending').css('display', 'none');
+        }
+    }
+}
+
 // 차트 기본 구조 만들어 주는 함수
 var makeChart = () => {
     var ctx = document.getElementById("main_chart"); // 캔버스 id값 가져오기
@@ -494,14 +587,14 @@ var makeChart = () => {
         data: {
             labels: [], // X축 제목
             datasets: [{
-                label: '미세먼지(pm10)',
+                label: '미세먼지(pm10) ㎍/m³',
                 data: [],
                 backgroundColor: [],
                 borderColor: [],
                 borderWidth: 1 // 선굵기
             },
             {
-                label: '초미세먼지(pm2.5)',
+                label: '초미세먼지(pm2.5) ㎍/m³',
                 data: [],
                 backgroundColor: [],
                 borderColor: [],
@@ -616,14 +709,8 @@ var makeColorSet = (arr, opt) => {
     return colors;
 }
 
-var datas = {
-    columns: ['서울', '경기', '인천', '강원', '세종', '충북', '충남'],
-    rows: ['06:00', '07:00', '08:00', '09:00', '10:00', '11:00', '12:00'],
-    datas:[['1','1','1',1,1,1,1],[1,'1',1,1,1,1,1],[1,1,1,1,1,1,1],[1,1,1,1,1,1,1],[1,1,1,1,1,1,1],[1,1,1,1,1,1,1],[1,1,1,1,1,1,1]]
-};
-
 var refineJsonData = function(jsonArr) {
-    const o = jsonArr.constructor()
+    const o = $.extend(true, [], jsonArr);
     let result = [];
 
     for (var i = 0; i < o.length; i++) {
@@ -653,13 +740,38 @@ var refineJsonData = function(jsonArr) {
     return result;
 }
 
-var makeTable = function(target, datas) {
+// 탭 헤이지르 만들어 주는 함수
+var makeTabPane = function(target, datas) {
+    const counts = datas.counts;
+    const texts = datas.tabnames;
+    const active = datas.active;
 
+    let header = '<div class="ui top attached tabular menu center">'
+    let panes = "";
+
+    for (var i = 0; i < counts; i++) {
+        header += `<a class="item${(i == active ? ' active': '')}" data-tab="tab_${i}">${texts[i]}</a>`;
+        panes += `<div class="ui bottom attached tab segment${(i == active ? ' active': '')}" data-tab="tab_${i}"></div>`;
+    }
+
+    header += `</div>`;
+
+    $(target).append('<div class="hr"></div>');
+    $(target).append(header);
+    $(target).append(panes);
+    $('.menu .item').tab();
+}
+
+// 테이블을 만들어 주는 함수
+var makeTable = function(target, datas) {
+    const title = datas.title;
+    const title_c = datas.title_deco;
     const colNames = datas.columns;
     const rowNames = datas.rows;
     const tDatas = datas.datas;
 
     let html = `<table class="ui definition table">
+        <caption>${title}<span>${title_c}</span></caption>
             <thead>
                 <tr>
                     <th></th>`;
