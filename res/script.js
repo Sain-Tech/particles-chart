@@ -210,14 +210,14 @@ var updateChart = async (options) => {
 
     // 현재 선택한 메뉴가 전국인 경우
     if (currentMenu === 0) {
-        
+
         // 24시간 전국 미세먼지 및 초미세먼지 데이터 테이블을 위한 탭을 만드는 변수
         var tabdata = {
             counts: 2, // 탭 수
             tabnames: ['미세먼지', '초미세먼지'], // 탭 이름
             active: 0 // 초기 활성 탭 지정
         };
-        
+
         // 옵션으로 탭 페이지를 만듦
         tabPaneAction.makeTabPane('.ui.segment', tabdata);
 
@@ -281,7 +281,7 @@ var updateChart = async (options) => {
         // 우선적으로 미세먼지(pm10) 데이터만 가져온 것이므로 pm25는 비워둔다
         // 차트에 넣을 각 그래프의 레이블과 미세먼지 데이터(pm10) 값을 세팅
         pData.names = ["서울", "경기", "인천", "강원", "세종", "충북", "충남", "대전", "경북", "경남", "대구", "울산", "부산", "전북", "전남", "광주", "제주"],
-        pData.pm10 = [src.seoul['#text'], src.gyeonggi['#text'], src.incheon['#text'], src.gangwon['#text'], src.sejong['#text'], src.chungbuk['#text'], src.chungnam['#text'], src.daejeon['#text'], src.gyeongbuk['#text'], src.gyeongnam['#text'], src.daegu['#text'], src.ulsan['#text'], src.busan['#text'], src.jeonbuk['#text'], src.jeonnam['#text'], src.gwangju['#text'], src.jeju['#text']];
+            pData.pm10 = [src.seoul['#text'], src.gyeonggi['#text'], src.incheon['#text'], src.gangwon['#text'], src.sejong['#text'], src.chungbuk['#text'], src.chungnam['#text'], src.daejeon['#text'], src.gyeongbuk['#text'], src.gyeongnam['#text'], src.daegu['#text'], src.ulsan['#text'], src.busan['#text'], src.jeonbuk['#text'], src.jeonnam['#text'], src.gwangju['#text'], src.jeju['#text']];
 
         // 초미세먼지(pm2.5) 데이터를 받기 위해 옵션 값 재설정
         options.itemCode = "PM25";
@@ -542,7 +542,7 @@ var tabPaneAction = {
         makeTabPane(target, data);
     },
 
-    removeTabPane: function() {
+    removeTabPane: function () {
         $('.ui.attached.tabular.menu').remove();
         $('.ui.tab.segment').remove();
         $('div.hr').remove();
@@ -556,11 +556,11 @@ var tableAction = {
         makeTable(target, data);
     },
 
-    removeTable: function(target) {
+    removeTable: function (target) {
         $(`${target} > .ui.tables`).remove();
     },
 
-    addTable: function(target, data) {
+    addTable: function (target, data) {
         makeTable(target, data);
     },
 
@@ -709,7 +709,7 @@ var makeColorSet = (arr, opt) => {
     return colors;
 }
 
-var refineJsonData = function(jsonArr) {
+var refineJsonData = function (jsonArr) {
     const o = $.extend(true, [], jsonArr);
     let result = [];
 
@@ -741,7 +741,7 @@ var refineJsonData = function(jsonArr) {
 }
 
 // 탭 헤이지르 만들어 주는 함수
-var makeTabPane = function(target, datas) {
+var makeTabPane = function (target, datas) {
     const counts = datas.counts;
     const texts = datas.tabnames;
     const active = datas.active;
@@ -750,8 +750,8 @@ var makeTabPane = function(target, datas) {
     let panes = "";
 
     for (var i = 0; i < counts; i++) {
-        header += `<a class="item${(i == active ? ' active': '')}" data-tab="tab_${i}">${texts[i]}</a>`;
-        panes += `<div class="ui bottom attached tab segment${(i == active ? ' active': '')}" data-tab="tab_${i}"></div>`;
+        header += `<a class="item${(i == active ? ' active' : '')}" data-tab="tab_${i}">${texts[i]}</a>`;
+        panes += `<div class="ui bottom attached tab segment${(i == active ? ' active' : '')}" data-tab="tab_${i}"></div>`;
     }
 
     header += `</div>`;
@@ -763,7 +763,7 @@ var makeTabPane = function(target, datas) {
 }
 
 // 테이블을 만들어 주는 함수
-var makeTable = function(target, datas) {
+var makeTable = function (target, datas) {
     const title = datas.title;
     const title_c = datas.title_deco;
     const colNames = datas.columns;
@@ -776,24 +776,24 @@ var makeTable = function(target, datas) {
                 <tr>
                     <th></th>`;
 
-    for(var i = 0; i < colNames.length; i++) {
+    for (var i = 0; i < colNames.length; i++) {
         html += `<th>${colNames[i]}</th>`;
     }
 
     html += `</tr></thead><tbody>`;
 
-    for(var i = 0; i < rowNames.length; i++) {
+    for (var i = 0; i < rowNames.length; i++) {
         html += `<tr>`;
         html += `<td>${rowNames[i]}</td>`;
-        
-        for(var j = 0; j < colNames.length; j++) {
+
+        for (var j = 0; j < colNames.length; j++) {
             let txt = '';
-            if(tDatas[i][j]) txt = tDatas[i][j];
+            if (tDatas[i][j]) txt = tDatas[i][j];
             html += `<td>${txt}</td>`;
         }
         html += `</tr>`;
     }
-    
+
     html += `</tbody></table>`;
 
     $(target).append(html);
