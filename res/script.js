@@ -740,7 +740,7 @@ var refineJsonData = function (jsonArr) {
     return result;
 }
 
-// 탭 헤이지르 만들어 주는 함수
+// 탭 페이지를 만들어 주는 함수
 var makeTabPane = function (target, datas) {
     const counts = datas.counts;
     const texts = datas.tabnames;
